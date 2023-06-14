@@ -1,0 +1,10 @@
+{
+  "1": {
+    "chainName": "mainnet",
+    "Test": ""
+  },
+  "31337": {
+    "chainName": "local",
+    "Test": ""
+  }
+}
