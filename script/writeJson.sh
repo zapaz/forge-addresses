@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 
 # sh writeJon.sh <file> <chainId> <key> <value>
 #
-# add a field in a JSON file, where root object has chainIds as fields
+# add a non-existing field to a JSON file, where root object has chainIds as fields
 #
 # {
 #   "31337": {
@@ -18,12 +18,16 @@
 # }
 #
 # what forge json cheatcodes can't do :-(
+# requires sed that all unix may have, but not windows ?
+#
+# new field must not already exists
+# check that the field not exists to be done by the caller
 
 # Get the JSON string from file
 json=$(cat $1)
 
 # Set the field to find
-# TODO add case zero or more spaces between ':' and '{'
+# TODO add the cases where there are zero or more spaces between ':' and '{'
 to_find="\"$2\": {"
 echo to find : $to_find
 
@@ -36,4 +40,3 @@ new_json=$(echo "$json" | sed s/"$to_find"/"$to_replace"/)
 
 # Write the new JSON string to same file
 echo "$new_json" > $1
-
