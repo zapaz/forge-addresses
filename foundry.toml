@@ -6,6 +6,6 @@ fs_permissions = [
   { access = "read-write", path = "./json" },
   { access = "read-write", path = "./test/json" },
 ]
-ffi = true
+# ffi = true
 
 # See more config options https://github.com/foundry-rs/foundry/tree/master/config

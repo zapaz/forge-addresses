@@ -2,39 +2,19 @@
 pragma solidity ^0.8.9;
 
 import "forge-std/Script.sol";
+import {LibString} from "src/LibString.sol";
 
 contract Addresses is Script {
+    using LibString for string;
+
     string public filePath = "json/addresses.json";
 
-    // add a non-existing field to a JSON file, where root object has chainIds as fields
-    // requires `sed` avalaible and new field must not already exists (check to do by the caller)
-    // replace
-    // {
-    //   "31337": {
-    //     "Test": "My test string",
-    //   }
-    // }
-    // with
-    // {
-    //   "31337": {
-    //     "Test": "My test string",
-    //     "Other": "Other test String"
-    //   }
-    // }
-    function writeJsonWithSed(string memory key, string memory value) public {
-        string memory stringFrom = string.concat("\"", vm.toString(block.chainid), "\": {");
-        string memory stringTo = string.concat(stringFrom, "\\n    \"", key, "\": \"", value, "\",");
-        string memory sed = string.concat("s/", stringFrom, "/", stringTo, "/");
-        // console.log("sed:", sed);
+    function writeJsonWithReplace(string memory key, string memory value) public {
+        string memory search = string.concat("\"", vm.toString(block.chainid), "\": {");
+        string memory replacement = string.concat(search, "\n    \"", key, "\": \"", value, "\",");
 
-        string[] memory inputs = new string[](6);
-        inputs[0] = "/usr/bin/sed";
-        inputs[1] = "-i";
-        inputs[3] = "";
-        inputs[3] = "-e";
-        inputs[4] = sed;
-        inputs[5] = filePath;
-        vm.ffi(inputs);
+        string memory json = vm.readFile(filePath);
+        vm.writeFile(filePath, json.replace(search, replacement));
     }
 
     function setFilePath(string calldata filePath_) public {
@@ -53,7 +33,7 @@ contract Addresses is Script {
 
         vm.writeJson(vm.toString(addr), filePath, jsonKey);
         if (addr != readAddress(name)) {
-            writeJsonWithSed(name, vm.toString(addr));
+            writeJsonWithReplace(name, vm.toString(addr));
         }
     }
 
